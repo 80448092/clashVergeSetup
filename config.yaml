@@ -1036,7 +1036,7 @@ proxies:
     plugin: obfs
     plugin-opts:
       mode: http
-      host: www.microsoft.com
+      host: 34812-6f3c94c8.download.microsoft.com
 - name: 英国01
   type: ss
   server: cn18.somethingstranges.com
