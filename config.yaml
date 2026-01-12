@@ -4,9 +4,9 @@ socks-port: 7891
 allow-lan: true
 mode: rule
 log-level: info
-ipv6: false  # 【关键】关闭 IPv6 防止真实 IP 泄露
+ipv6: false  # 【关键】必须关闭，防止 Gemini 通过 IPv6 检测到你的真实位置
 
-# 2. DNS 设置（防止 Gemini 检测到你在国内）
+# 2. DNS 防泄露配置 (确保 Gemini 不会因为 DNS 发现你在中国)
 dns:
   enable: true
   enhanced-mode: fake-ip
@@ -14,30 +14,38 @@ dns:
   nameserver:
     - https://dns.google/dns-query
     - https://1.1.1.1/dns-query
-    - 8.8.8.8
 
-# 3. 代理分组（解决你图片中的报错）
+# 3. 节点与分组 (修复 "proxy not found" 报错)
+proxies: 
+  # 此处应为你机场提供的节点列表，以下仅为示例
+  - name: "洛杉矶_双ISP"
+    type: ss
+    server: 67.102.180.143
+    port: 55168
+    cipher: aes-256-gcm #chacha20-ietf-poly1305 # 必须与服务器一致
+    password: 57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA=
+    udp: true
+    
+
 proxy-groups:
-  - name: Proxy  # 【重要】确保 rules 里的名称与这里一致
+  - name: 🚀 节点选择  # 这个名字必须与下面 rules 里的名字完全一致
     type: select
     proxies:
+      - 美国节点
       - 自动选择
-      - 美国节点  # 确保你的订阅里有这些节点
-      - 新加坡节点
 
-# 4. 路由规则（针对 Gemini 深度优化）
+# 4. Gemini 专项分流规则
 rules:
-  # Gemini 专项规则（放在最顶部）
-  - DOMAIN,gemini.google.com,Proxy
-  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,Proxy
-  - DOMAIN-SUFFIX,ai.google.com,Proxy
-  - DOMAIN-KEYWORD,googleai,Proxy
+  # Gemini 核心域名
+  - DOMAIN,gemini.google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🚀 节点选择
+  - DOMAIN-SUFFIX,ai.google.com,🚀 节点选择
+  - DOMAIN-KEYWORD,googleai,🚀 节点选择
   
-  # 常规 Google 分流
-  - DOMAIN-SUFFIX,google.com,Proxy
-  - DOMAIN-SUFFIX,gstatic.com,Proxy
+  # Google 基础域名
+  - DOMAIN-SUFFIX,google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,gstatic.com,🚀 节点选择
   
-  # 防止国内流量走代理
+  # 国内流量直连
   - GEOIP,CN,DIRECT
-  - MATCH,Proxy
-
+  - MATCH,🚀 节点选择
