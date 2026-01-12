@@ -28,6 +28,9 @@ payload:
   - DOMAIN-KEYWORD,googleai
 
 rules:
-  - GEOIP,CN,DIRECT
-  - MATCH,Proxy
+  - DOMAIN-SUFFIX,gemini.google.com,代理分组  # Gemini 主站
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,代理分组 # API 接口（最重要）
+  - DOMAIN-SUFFIX,ai.google.com,代理分组 # AI 门户
+  - DOMAIN-SUFFIX,alchemyapi.io,代理分组 # 某些后台逻辑
+  - DOMAIN-KEYWORD,googleai,代理分组
 
