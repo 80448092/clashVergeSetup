@@ -1,12 +1,16 @@
-# 1. 基础设置
+# ==========================================
+# 基础设置
+# ==========================================
 port: 7890
 socks-port: 7891
 allow-lan: true
 mode: rule
 log-level: info
-ipv6: false  # 【关键】必须关闭，防止 Gemini 通过 IPv6 检测到你的真实位置
+ipv6: false  # 【关键】关闭 IPv6 防止通过运营商地址泄露真实位置
 
-# 2. DNS 防泄露配置 (确保 Gemini 不会因为 DNS 发现你在中国)
+# ==========================================
+# DNS 设置（防泄露/防检测核心）
+# ==========================================
 dns:
   enable: true
   enhanced-mode: fake-ip
@@ -14,38 +18,44 @@ dns:
   nameserver:
     - https://dns.google/dns-query
     - https://1.1.1.1/dns-query
+    - 8.8.8.8
 
-# 3. 节点与分组 (修复 "proxy not found" 报错)
-proxies: 
-  # 此处应为你机场提供的节点列表，以下仅为示例
+# ==========================================
+# 节点信息
+# ==========================================
+proxies:
   - name: "洛杉矶_双ISP"
     type: ss
     server: 67.102.180.143
     port: 55168
-    cipher: aes-256-gcm #chacha20-ietf-poly1305 # 必须与服务器一致
-    password: 57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA=
+    cipher: aes-256-gcm
+    password: "57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA="  # 确保密码用引号包裹
     udp: true
-    
 
+# ==========================================
+# 代理分组（修复之前报错的关键）
+# ==========================================
 proxy-groups:
-  - name: 🚀 节点选择  # 这个名字必须与下面 rules 里的名字完全一致
+  - name: 🚀 节点选择
     type: select
     proxies:
-      - 美国节点
-      - 自动选择
+      - "洛杉矶_双ISP"
+      - DIRECT
 
-# 4. Gemini 专项分流规则
+# ==========================================
+# 分流规则（解决 Gemini 访问权限限制）
+# ==========================================
 rules:
-  # Gemini 核心域名
+  # --- Gemini 专项优化规则 ---
   - DOMAIN,gemini.google.com,🚀 节点选择
   - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🚀 节点选择
   - DOMAIN-SUFFIX,ai.google.com,🚀 节点选择
   - DOMAIN-KEYWORD,googleai,🚀 节点选择
   
-  # Google 基础域名
+  # --- Google 基础分流 ---
   - DOMAIN-SUFFIX,google.com,🚀 节点选择
   - DOMAIN-SUFFIX,gstatic.com,🚀 节点选择
   
-  # 国内流量直连
+  # --- 国内流量直连 ---
   - GEOIP,CN,DIRECT
   - MATCH,🚀 节点选择
