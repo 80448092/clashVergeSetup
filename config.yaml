@@ -134,8 +134,8 @@ rules:
   - DOMAIN-SUFFIX,googleusercontent.com,代理
   - DOMAIN-SUFFIX,gstatic.com,代理
   - DOMAIN-SUFFIX,gmail.com,代理
-  - DOMAIN-SUFFIX,googlevideo.com,代理
   - DOMAIN-SUFFIX,sheerid.com,代理
+  - DOMAIN-SUFFIX,googlevideo.com,代理
   
   
   # YouTube
