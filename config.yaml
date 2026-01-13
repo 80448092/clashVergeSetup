@@ -1,207 +1,149 @@
+# ============================================
+# Clash Verge 配置 - Google 学生优惠专用
+# 使用 Proxy-Cheap Comcast 住宅代理
+# ============================================
+
+# 基础设置
 port: 7890
 socks-port: 7891
 allow-lan: false
 mode: rule
-log-level: info  #silent  # 减少日志记录
+log-level: info
+ipv6: false
 external-controller: 127.0.0.1:9090
-ipv6: false  # 【关键】关闭 IPv6 防止通过运营商地址泄露真实位置
 
-# ==========================================
-# DNS 设置（防泄露/防检测核心）
-# ==========================================
-#dns:
-#  enable: true
-#  listen: 0.0.0.0:53
-#  enhanced-mode: fake-ip
-#  nameserver:
-#    - 8.8.8.8
-#    - 1.1.1.1
-#  fallback:
-#    - https://dns.google/dns-query
-#    - https://cloudflare-dns.com/dns-query
-# DNS - 全 DoH 隐私模式
+# DNS 配置（隐私优先 + 全 DoH）
 dns:
   enable: true
-  ipv6: false  # ← DNS 不查询 IPv6
+  ipv6: false
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
   
+  # 主 DNS（美国）
   nameserver:
     - https://dns.google/dns-query
     - https://cloudflare-dns.com/dns-query
     - https://dns.quad9.net/dns-query
+  
+  # 备用 DNS
+  fallback:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
 
-
+# 代理配置
 proxies:
-  # Proxy-Cheap Comcast 住宅代理
-  - name: "美国住宅IP"
-    type: http  # 或 socks5，看 Dashboard 提供的类型
-    server: "46.34.39.123"  # 从 Dashboard 获取
-    port: 43321  # 从 Dashboard 获取（可能是 8080）
-    username: "WA8eNELH64mNmhp"
-    password: "bWPDb9vGglhV4t1"
+  # Proxy-Cheap Comcast 住宅代理（主力）
+  - name: "Comcast住宅IP"
+    type: http                    # 根据 Dashboard 显示，可能是 http 或 socks5
+    server: "你的代理IP"          # 从 Proxy-Cheap Dashboard 获取
+    port: 3128                    # 从 Dashboard 获取（常见：3128, 8080, 1080）
+    username: "你的用户名"        # 从 Dashboard 获取
+    password: "你的密码"          # 从 Dashboard 获取
     tls: false
 
-  - name: "洛杉矶"
+  # 你的 Shadowsocks 服务器（备用）
+  - name: "SS美国"
     type: ss
-    server: "67.102.180.143"  # 公网IP 或 10.11.167.231
+    server: "你的服务器IP"        # 你的 Ubuntu 服务器公网 IP
     port: 55168
     cipher: aes-256-gcm
-    password: "57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA="
+    password: "57V"
     udp: true
 
+# 代理组
 proxy-groups:
-  - name: "代理"
+  # 主选择组
+  - name: "代理选择"
     type: select
     proxies:
-      - "美国住宅IP"
-      - "洛杉矶"
+      - "Comcast住宅IP"
+      - "SS美国"
       - DIRECT
 
+  # Google 验证专用（强制 Comcast）
+  - name: "Google验证"
+    type: select
+    proxies:
+      - "Comcast住宅IP"
+
+  # AI 服务
+  - name: "AI服务"
+    type: select
+    proxies:
+      - "代理选择"
+      - "Comcast住宅IP"
+      - "SS美国"
+
+# 规则配置
 rules:
-  # ========== AI 服务 ==========
-  # OpenAI (ChatGPT, GPT-4, DALL-E, Whisper, API)
-  - DOMAIN-SUFFIX,openai.com,代理
-  - DOMAIN-SUFFIX,ai.com,代理
-  - DOMAIN-SUFFIX,chatgpt.com,代理
-  - DOMAIN-SUFFIX,oaistatic.com,代理
-  - DOMAIN-SUFFIX,oaiusercontent.com,代理
-  - DOMAIN-KEYWORD,openai,代理
+  # ========================================
+  # Google 学生验证（必须走 Comcast）
+  # ========================================
+  - DOMAIN,one.google.com,Google验证
+  - DOMAIN-SUFFIX,sheerid.com,Google验证
+  - DOMAIN,payments.google.com,Google验证
+  - DOMAIN,pay.google.com,Google验证
+  
+  # ========================================
+  # Google 相关服务
+  # ========================================
+  - DOMAIN-SUFFIX,google.com,代理选择
+  - DOMAIN-SUFFIX,googleapis.com,代理选择
+  - DOMAIN-SUFFIX,googleusercontent.com,代理选择
+  - DOMAIN-SUFFIX,gstatic.com,代理选择
+  - DOMAIN-SUFFIX,gmail.com,代理选择
+  - DOMAIN-SUFFIX,googlevideo.com,代理选择
+  - DOMAIN-SUFFIX,youtube.com,代理选择
+  - DOMAIN-SUFFIX,ytimg.com,代理选择
+  - DOMAIN-SUFFIX,youtu.be,代理选择
+  
+  # ========================================
+  # AI 服务
+  # ========================================
+  # OpenAI
+  - DOMAIN-SUFFIX,openai.com,AI服务
+  - DOMAIN-SUFFIX,ai.com,AI服务
+  - DOMAIN-SUFFIX,chatgpt.com,AI服务
+  - DOMAIN-SUFFIX,oaistatic.com,AI服务
+  - DOMAIN-SUFFIX,oaiusercontent.com,AI服务
   
   # Anthropic (Claude)
-  - DOMAIN-SUFFIX,anthropic.com,代理
-  - DOMAIN-SUFFIX,claude.ai,代理
-  - DOMAIN-KEYWORD,anthropic,代理
+  - DOMAIN-SUFFIX,anthropic.com,AI服务
+  - DOMAIN-SUFFIX,claude.ai,AI服务
   
-  # Google AI (Gemini, Bard, PaLM)
-  - DOMAIN-SUFFIX,gemini.google.com,代理
-  - DOMAIN-SUFFIX,bard.google.com,代理
-  - DOMAIN-SUFFIX,makersuite.google.com,代理
-  - DOMAIN-SUFFIX,ai.google.dev,代理
-  - DOMAIN-SUFFIX,aistudio.google.com,代理
-  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,代理
+  # Google AI
+  - DOMAIN-SUFFIX,gemini.google.com,AI服务
+  - DOMAIN-SUFFIX,bard.google.com,AI服务
+  - DOMAIN-SUFFIX,makersuite.google.com,AI服务
+  - DOMAIN-SUFFIX,ai.google.dev,AI服务
   
-  # Microsoft AI (Copilot, Bing Chat)
-  - DOMAIN-SUFFIX,copilot.microsoft.com,代理
-  - DOMAIN-SUFFIX,bing.com,代理
-  - DOMAIN-SUFFIX,sydney.bing.com,代理
-  - DOMAIN-KEYWORD,copilot,代理
+  # Microsoft Copilot
+  - DOMAIN-SUFFIX,copilot.microsoft.com,AI服务
+  - DOMAIN-SUFFIX,bing.com,AI服务
   
-  # Perplexity AI
-  - DOMAIN-SUFFIX,perplexity.ai,代理
-  - DOMAIN-KEYWORD,perplexity,代理
+  # 其他 AI
+  - DOMAIN-SUFFIX,perplexity.ai,AI服务
+  - DOMAIN-SUFFIX,midjourney.com,AI服务
+  - DOMAIN-SUFFIX,huggingface.co,AI服务
   
-  # Midjourney (AI 绘画)
-  - DOMAIN-SUFFIX,midjourney.com,代理
-  - DOMAIN-SUFFIX,cdn.midjourney.com,代理
+  # ========================================
+  # 常用国外网站
+  # ========================================
+  - DOMAIN-SUFFIX,github.com,代理选择
+  - DOMAIN-SUFFIX,githubusercontent.com,代理选择
+  - DOMAIN-SUFFIX,github.io,代理选择
+  - DOMAIN-SUFFIX,twitter.com,代理选择
+  - DOMAIN-SUFFIX,x.com,代理选择
+  - DOMAIN-SUFFIX,facebook.com,代理选择
+  - DOMAIN-SUFFIX,instagram.com,代理选择
+  - DOMAIN-SUFFIX,reddit.com,代理选择
+  - DOMAIN-SUFFIX,wikipedia.org,代理选择
+  - DOMAIN-SUFFIX,stackoverflow.com,代理选择
+  - DOMAIN-SUFFIX,medium.com,代理选择
   
-  # Stability AI (Stable Diffusion)
-  - DOMAIN-SUFFIX,stability.ai,代理
-  - DOMAIN-SUFFIX,stabilityai.us,代理
-  - DOMAIN-SUFFIX,dreamstudio.ai,代理
-  
-  # Hugging Face
-  - DOMAIN-SUFFIX,huggingface.co,代理
-  - DOMAIN-SUFFIX,hf.co,代理
-  - DOMAIN-KEYWORD,huggingface,代理
-  
-  # Replicate
-  - DOMAIN-SUFFIX,replicate.com,代理
-  - DOMAIN-SUFFIX,replicate.delivery,代理
-  
-  # Cohere
-  - DOMAIN-SUFFIX,cohere.ai,代理
-  - DOMAIN-SUFFIX,cohere.com,代理
-  
-  # Character AI
-  - DOMAIN-SUFFIX,character.ai,代理
-  - DOMAIN-SUFFIX,characterai.io,代理
-  
-  # Notion AI
-  - DOMAIN-SUFFIX,notion.so,代理
-  - DOMAIN-SUFFIX,notion.com,代理
-  
-  # Jasper AI
-  - DOMAIN-SUFFIX,jasper.ai,代理
-  
-  # Copy.ai
-  - DOMAIN-SUFFIX,copy.ai,代理
-  
-  # RunwayML (AI 视频)
-  - DOMAIN-SUFFIX,runwayml.com,代理
-  
-  # ElevenLabs (AI 语音)
-  - DOMAIN-SUFFIX,elevenlabs.io,代理
-  - DOMAIN-SUFFIX,elevenlabs.com,代理
-  
-  # Poe (多AI聚合平台)
-  - DOMAIN-SUFFIX,poe.com,代理
-  
-  # ========== 常用国外网站 ==========
-  # Google 服务
-  - DOMAIN-SUFFIX,google.com,代理
-  - DOMAIN-SUFFIX,googleapis.com,代理
-  - DOMAIN-SUFFIX,googleusercontent.com,代理
-  - DOMAIN-SUFFIX,gstatic.com,代理
-  - DOMAIN-SUFFIX,gmail.com,代理
-  - DOMAIN-SUFFIX,googlevideo.com,代理
-  # Google 学生验证必须走 Comcast
-  - DOMAIN,one.google.com,美国住宅IP
-  - DOMAIN,payments.google.com,美国住宅IP
-  - DOMAIN-SUFFIX,sheerid.com,美国住宅IP
-
-  
-  # YouTube
-  - DOMAIN-SUFFIX,youtube.com,代理
-  - DOMAIN-SUFFIX,ytimg.com,代理
-  - DOMAIN-SUFFIX,youtu.be,代理
-  
-  # GitHub
-  - DOMAIN-SUFFIX,github.com,代理
-  - DOMAIN-SUFFIX,githubusercontent.com,代理
-  - DOMAIN-SUFFIX,github.io,代理
-  - DOMAIN-SUFFIX,githubassets.com,代理
-  
-  # Twitter/X
-  - DOMAIN-SUFFIX,twitter.com,代理
-  - DOMAIN-SUFFIX,x.com,代理
-  - DOMAIN-SUFFIX,twimg.com,代理
-  - DOMAIN-SUFFIX,t.co,代理
-  
-  # Facebook/Meta
-  - DOMAIN-SUFFIX,facebook.com,代理
-  - DOMAIN-SUFFIX,fbcdn.net,代理
-  - DOMAIN-SUFFIX,instagram.com,代理
-  - DOMAIN-SUFFIX,whatsapp.com,代理
-  
-  # Reddit
-  - DOMAIN-SUFFIX,reddit.com,代理
-  - DOMAIN-SUFFIX,redd.it,代理
-  - DOMAIN-SUFFIX,redditstatic.com,代理
-  
-  # Wikipedia
-  - DOMAIN-SUFFIX,wikipedia.org,代理
-  - DOMAIN-SUFFIX,wikimedia.org,代理
-  
-  # Stack Overflow
-  - DOMAIN-SUFFIX,stackoverflow.com,代理
-  - DOMAIN-SUFFIX,stackexchange.com,代理
-  
-  # Medium
-  - DOMAIN-SUFFIX,medium.com,代理
-  
-  # Telegram
-  - DOMAIN-SUFFIX,telegram.org,代理
-  - DOMAIN-SUFFIX,t.me,代理
-  
-  # Discord
-  - DOMAIN-SUFFIX,discord.com,代理
-  - DOMAIN-SUFFIX,discordapp.com,代理
-  
-  # Cloudflare
-  - DOMAIN-SUFFIX,cloudflare.com,代理
-  
-  # ========== 国内网站直连 ==========
+  # ========================================
+  # 国内网站直连
+  # ========================================
   - DOMAIN-SUFFIX,cn,DIRECT
   - DOMAIN-KEYWORD,baidu,DIRECT
   - DOMAIN-KEYWORD,aliyun,DIRECT
@@ -213,23 +155,21 @@ rules:
   - DOMAIN-KEYWORD,weixin,DIRECT
   - DOMAIN-KEYWORD,douyin,DIRECT
   - DOMAIN-KEYWORD,bilibili,DIRECT
-  - DOMAIN-KEYWORD,ucloud.cn,DIRECT
   
-  # ========== 局域网直连 ==========
+  # ========================================
+  # 局域网直连
+  # ========================================
   - IP-CIDR,10.0.0.0/8,DIRECT
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,172.16.0.0/12,DIRECT
   - IP-CIDR,192.168.0.0/16,DIRECT
   
-  # ========== 中国IP直连 ==========
+  # ========================================
+  # 中国 IP 直连
+  # ========================================
   - GEOIP,CN,DIRECT
   
-  # ========== 默认规则 ==========
-  - MATCH,代理
-
-
-
-
-
-
-
+  # ========================================
+  # 默认规则（其他走代理）
+  # ========================================
+  - MATCH,代理选择
