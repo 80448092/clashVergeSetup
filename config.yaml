@@ -135,6 +135,7 @@ rules:
   - DOMAIN-SUFFIX,gstatic.com,代理
   - DOMAIN-SUFFIX,gmail.com,代理
   - DOMAIN-SUFFIX,googlevideo.com,代理
+  - DOMAIN-SUFFIX,sheerid.com,双重代理
   
   # YouTube
   - DOMAIN-SUFFIX,youtube.com,代理
