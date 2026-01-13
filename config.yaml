@@ -35,19 +35,19 @@ proxies:
   # Proxy-Cheap Comcast 住宅代理（主力）
   - name: "Comcast住宅IP"
     type: http                    # 根据 Dashboard 显示，可能是 http 或 socks5
-    server: "你的代理IP"          # 从 Proxy-Cheap Dashboard 获取
-    port: 3128                    # 从 Dashboard 获取（常见：3128, 8080, 1080）
-    username: "你的用户名"        # 从 Dashboard 获取
-    password: "你的密码"          # 从 Dashboard 获取
+    server: "46.34.39.123"          # 从 Proxy-Cheap Dashboard 获取
+    port: 43321                    # 从 Dashboard 获取（常见：3128, 8080, 1080）
+    username: "WA8eNELH64mNmhp"        # 从 Dashboard 获取
+    password: "bWPDb9vGglhV4t1"          # 从 Dashboard 获取
     tls: false
 
   # 你的 Shadowsocks 服务器（备用）
   - name: "SS美国"
     type: ss
-    server: "你的服务器IP"        # 你的 Ubuntu 服务器公网 IP
+    server: "67.102.180.143"        # 你的 Ubuntu 服务器公网 IP
     port: 55168
     cipher: aes-256-gcm
-    password: "57V"
+    password: "57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA="
     udp: true
 
 # 代理组
