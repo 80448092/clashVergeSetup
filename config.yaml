@@ -213,7 +213,7 @@ rules:
   - DOMAIN-KEYWORD,weixin,DIRECT
   - DOMAIN-KEYWORD,douyin,DIRECT
   - DOMAIN-KEYWORD,bilibili,DIRECT
-  - DOMAIN-KEYWORD,bilibili,DIRECT
+  - DOMAIN-KEYWORD,ucloud.cn,DIRECT
   
   # ========== 局域网直连 ==========
   - IP-CIDR,10.0.0.0/8,DIRECT
