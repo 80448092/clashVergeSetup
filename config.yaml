@@ -145,10 +145,10 @@ rules:
   - DOMAIN-SUFFIX,gstatic.com,代理
   - DOMAIN-SUFFIX,gmail.com,代理
   - DOMAIN-SUFFIX,googlevideo.com,代理
-  - DOMAIN-SUFFIX,sheerid.com,代理
   # Google 学生验证必须走 Comcast
   - DOMAIN,one.google.com,美国住宅IP
   - DOMAIN,payments.google.com,美国住宅IP
+  - DOMAIN-SUFFIX,sheerid.com,美国住宅IP
 
   
   # YouTube
