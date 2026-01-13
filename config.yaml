@@ -6,6 +6,203 @@ log-level: info
 external-controller: 127.0.0.1:9090
 
 proxies:
+  - name: "洛杉矶"
+    type: ss
+    server: "67.102.180.143"  # 公网IP 或 10.11.167.231
+    port: 55168
+    cipher: aes-256-gcm
+    password: "57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA="
+    udp: true
+
+proxy-groups:
+  - name: "代理"
+    type: select
+    proxies:
+      - "洛杉矶"
+      - DIRECT
+
+rules:
+  # ========== AI 服务 ==========
+  # OpenAI (ChatGPT, GPT-4, DALL-E, Whisper, API)
+  - DOMAIN-SUFFIX,openai.com,代理
+  - DOMAIN-SUFFIX,ai.com,代理
+  - DOMAIN-SUFFIX,chatgpt.com,代理
+  - DOMAIN-SUFFIX,oaistatic.com,代理
+  - DOMAIN-SUFFIX,oaiusercontent.com,代理
+  - DOMAIN-KEYWORD,openai,代理
+  
+  # Anthropic (Claude)
+  - DOMAIN-SUFFIX,anthropic.com,代理
+  - DOMAIN-SUFFIX,claude.ai,代理
+  - DOMAIN-KEYWORD,anthropic,代理
+  
+  # Google AI (Gemini, Bard, PaLM)
+  - DOMAIN-SUFFIX,gemini.google.com,代理
+  - DOMAIN-SUFFIX,bard.google.com,代理
+  - DOMAIN-SUFFIX,makersuite.google.com,代理
+  - DOMAIN-SUFFIX,ai.google.dev,代理
+  - DOMAIN-SUFFIX,aistudio.google.com,代理
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,代理
+  
+  # Microsoft AI (Copilot, Bing Chat)
+  - DOMAIN-SUFFIX,copilot.microsoft.com,代理
+  - DOMAIN-SUFFIX,bing.com,代理
+  - DOMAIN-SUFFIX,sydney.bing.com,代理
+  - DOMAIN-KEYWORD,copilot,代理
+  
+  # Perplexity AI
+  - DOMAIN-SUFFIX,perplexity.ai,代理
+  - DOMAIN-KEYWORD,perplexity,代理
+  
+  # Midjourney (AI 绘画)
+  - DOMAIN-SUFFIX,midjourney.com,代理
+  - DOMAIN-SUFFIX,cdn.midjourney.com,代理
+  
+  # Stability AI (Stable Diffusion)
+  - DOMAIN-SUFFIX,stability.ai,代理
+  - DOMAIN-SUFFIX,stabilityai.us,代理
+  - DOMAIN-SUFFIX,dreamstudio.ai,代理
+  
+  # Hugging Face
+  - DOMAIN-SUFFIX,huggingface.co,代理
+  - DOMAIN-SUFFIX,hf.co,代理
+  - DOMAIN-KEYWORD,huggingface,代理
+  
+  # Replicate
+  - DOMAIN-SUFFIX,replicate.com,代理
+  - DOMAIN-SUFFIX,replicate.delivery,代理
+  
+  # Cohere
+  - DOMAIN-SUFFIX,cohere.ai,代理
+  - DOMAIN-SUFFIX,cohere.com,代理
+  
+  # Character AI
+  - DOMAIN-SUFFIX,character.ai,代理
+  - DOMAIN-SUFFIX,characterai.io,代理
+  
+  # Notion AI
+  - DOMAIN-SUFFIX,notion.so,代理
+  - DOMAIN-SUFFIX,notion.com,代理
+  
+  # Jasper AI
+  - DOMAIN-SUFFIX,jasper.ai,代理
+  
+  # Copy.ai
+  - DOMAIN-SUFFIX,copy.ai,代理
+  
+  # RunwayML (AI 视频)
+  - DOMAIN-SUFFIX,runwayml.com,代理
+  
+  # ElevenLabs (AI 语音)
+  - DOMAIN-SUFFIX,elevenlabs.io,代理
+  - DOMAIN-SUFFIX,elevenlabs.com,代理
+  
+  # Poe (多AI聚合平台)
+  - DOMAIN-SUFFIX,poe.com,代理
+  
+  # ========== 常用国外网站 ==========
+  # Google 服务
+  - DOMAIN-SUFFIX,google.com,代理
+  - DOMAIN-SUFFIX,googleapis.com,代理
+  - DOMAIN-SUFFIX,googleusercontent.com,代理
+  - DOMAIN-SUFFIX,gstatic.com,代理
+  - DOMAIN-SUFFIX,gmail.com,代理
+  - DOMAIN-SUFFIX,googlevideo.com,代理
+  
+  # YouTube
+  - DOMAIN-SUFFIX,youtube.com,代理
+  - DOMAIN-SUFFIX,ytimg.com,代理
+  - DOMAIN-SUFFIX,youtu.be,代理
+  
+  # GitHub
+  - DOMAIN-SUFFIX,github.com,代理
+  - DOMAIN-SUFFIX,githubusercontent.com,代理
+  - DOMAIN-SUFFIX,github.io,代理
+  - DOMAIN-SUFFIX,githubassets.com,代理
+  
+  # Twitter/X
+  - DOMAIN-SUFFIX,twitter.com,代理
+  - DOMAIN-SUFFIX,x.com,代理
+  - DOMAIN-SUFFIX,twimg.com,代理
+  - DOMAIN-SUFFIX,t.co,代理
+  
+  # Facebook/Meta
+  - DOMAIN-SUFFIX,facebook.com,代理
+  - DOMAIN-SUFFIX,fbcdn.net,代理
+  - DOMAIN-SUFFIX,instagram.com,代理
+  - DOMAIN-SUFFIX,whatsapp.com,代理
+  
+  # Reddit
+  - DOMAIN-SUFFIX,reddit.com,代理
+  - DOMAIN-SUFFIX,redd.it,代理
+  - DOMAIN-SUFFIX,redditstatic.com,代理
+  
+  # Wikipedia
+  - DOMAIN-SUFFIX,wikipedia.org,代理
+  - DOMAIN-SUFFIX,wikimedia.org,代理
+  
+  # Stack Overflow
+  - DOMAIN-SUFFIX,stackoverflow.com,代理
+  - DOMAIN-SUFFIX,stackexchange.com,代理
+  
+  # Medium
+  - DOMAIN-SUFFIX,medium.com,代理
+  
+  # Telegram
+  - DOMAIN-SUFFIX,telegram.org,代理
+  - DOMAIN-SUFFIX,t.me,代理
+  
+  # Discord
+  - DOMAIN-SUFFIX,discord.com,代理
+  - DOMAIN-SUFFIX,discordapp.com,代理
+  
+  # Cloudflare
+  - DOMAIN-SUFFIX,cloudflare.com,代理
+  
+  # ========== 国内网站直连 ==========
+  - DOMAIN-SUFFIX,cn,DIRECT
+  - DOMAIN-KEYWORD,baidu,DIRECT
+  - DOMAIN-KEYWORD,aliyun,DIRECT
+  - DOMAIN-KEYWORD,taobao,DIRECT
+  - DOMAIN-KEYWORD,tmall,DIRECT
+  - DOMAIN-KEYWORD,jd,DIRECT
+  - DOMAIN-KEYWORD,qq,DIRECT
+  - DOMAIN-KEYWORD,tencent,DIRECT
+  - DOMAIN-KEYWORD,weixin,DIRECT
+  - DOMAIN-KEYWORD,douyin,DIRECT
+  - DOMAIN-KEYWORD,bilibili,DIRECT
+  
+  # ========== 局域网直连 ==========
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  
+  # ========== 中国IP直连 ==========
+  - GEOIP,CN,DIRECT
+  
+  # ========== 默认规则 ==========
+  - MATCH,代理
+
+
+
+
+
+
+
+
+
+
+
+
+port: 7890
+socks-port: 7891
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+
+proxies:
   - name: "洛杉矶_双ISP"
     type: ss
     server: 67.102.180.143
@@ -24,3 +221,68 @@ proxy-groups:
 rules:
   - GEOIP,CN,DIRECT
   - MATCH,Proxy
+
+
+
+# ==========================================
+# 基础设置
+# ==========================================
+port: 7890
+socks-port: 7891
+allow-lan: true
+mode: rule
+log-level: info
+ipv6: false  # 【关键】关闭 IPv6 防止通过运营商地址泄露真实位置
+
+# ==========================================
+# DNS 设置（防泄露/防检测核心）
+# ==========================================
+dns:
+  enable: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - https://dns.google/dns-query
+    - https://1.1.1.1/dns-query
+    - 8.8.8.8
+
+# ==========================================
+# 节点信息
+# ==========================================
+proxies:
+  - name: "洛杉矶_双ISP"
+    type: ss
+    server: 67.102.180.143
+    port: 55168
+    cipher: aes-256-gcm
+    password: "57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA="  # 确保密码用引号包裹
+    udp: true
+
+# ==========================================
+# 代理分组（修复之前报错的关键）
+# ==========================================
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - "洛杉矶_双ISP"
+      - DIRECT
+
+# ==========================================
+# 分流规则（解决 Gemini 访问权限限制）
+# ==========================================
+rules:
+  # --- Gemini 专项优化规则 ---
+  - DOMAIN,gemini.google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,🚀 节点选择
+  - DOMAIN-SUFFIX,ai.google.com,🚀 节点选择
+  - DOMAIN-KEYWORD,googleai,🚀 节点选择
+  
+  # --- Google 基础分流 ---
+  - DOMAIN-SUFFIX,google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,gstatic.com,🚀 节点选择
+  
+  # --- 国内流量直连 ---
+  - GEOIP,CN,DIRECT
+  - MATCH,🚀 节点选择
+
