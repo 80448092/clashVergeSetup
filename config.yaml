@@ -1,175 +1,29 @@
-# ============================================
-# Clash Verge 配置 - Google 学生优惠专用
-# 使用 Proxy-Cheap Comcast 住宅代理
-# ============================================
-
-# 基础设置
 port: 7890
 socks-port: 7891
 allow-lan: false
-mode: rule
-log-level: info
-ipv6: false
-external-controller: 127.0.0.1:9090
+mode: global  # ← 改为全局模式测试
+log-level: debug  # ← 开启详细日志
 
-# DNS 配置（隐私优先 + 全 DoH）
 dns:
   enable: true
-  ipv6: false
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  
-  # 主 DNS（美国）
   nameserver:
-    - https://dns.google/dns-query
-    - https://cloudflare-dns.com/dns-query
-    - https://dns.quad9.net/dns-query
-  
-  # 备用 DNS
-  fallback:
-    - https://dns.google/dns-query
-    - https://cloudflare-dns.com/dns-query
+    - 8.8.8.8
+    - 1.1.1.1
 
-# 代理配置
 proxies:
-  # Proxy-Cheap Comcast 住宅代理（主力）
-  - name: "Comcast住宅IP"
-    type: http                    # 根据 Dashboard 显示，可能是 http 或 socks5
-    server: "46.34.39.123"          # 从 Proxy-Cheap Dashboard 获取
-    port: 43321                    # 从 Dashboard 获取（常见：3128, 8080, 1080）
-    username: "WA8eNELH64mNmhp"        # 从 Dashboard 获取
-    password: "bWPDb9vGglhV4t1"          # 从 Dashboard 获取
-    tls: false
+  # 只测试 Comcast
+  - name: "Comcast"
+    type: http  # 或 socks5
+    server: "46.34.39.123"
+    port: 43321
+    username: "WA8eNELH64mNmhp"
+    password: "bWPDb9vGglhV4t1"
 
-  # 你的 Shadowsocks 服务器（备用）
-  - name: "SS美国"
-    type: ss
-    server: "67.102.180.143"        # 你的 Ubuntu 服务器公网 IP
-    port: 55168
-    cipher: aes-256-gcm
-    password: "57V/WcMMJ/aF3rnby0QungsxjlQkglICjSReqsJTjbA="
-    udp: true
-
-# 代理组
 proxy-groups:
-  # 主选择组
-  - name: "代理选择"
+  - name: "代理"
     type: select
     proxies:
-      - "Comcast住宅IP"
-      - "SS美国"
-      - DIRECT
+      - "Comcast"
 
-  # Google 验证专用（强制 Comcast）
-  - name: "Google验证"
-    type: select
-    proxies:
-      - "Comcast住宅IP"
-
-  # AI 服务
-  - name: "AI服务"
-    type: select
-    proxies:
-      - "代理选择"
-      - "Comcast住宅IP"
-      - "SS美国"
-
-# 规则配置
 rules:
-  # ========================================
-  # Google 学生验证（必须走 Comcast）
-  # ========================================
-  - DOMAIN,one.google.com,Google验证
-  - DOMAIN-SUFFIX,sheerid.com,Google验证
-  - DOMAIN,payments.google.com,Google验证
-  - DOMAIN,pay.google.com,Google验证
-  
-  # ========================================
-  # Google 相关服务
-  # ========================================
-  - DOMAIN-SUFFIX,google.com,代理选择
-  - DOMAIN-SUFFIX,googleapis.com,代理选择
-  - DOMAIN-SUFFIX,googleusercontent.com,代理选择
-  - DOMAIN-SUFFIX,gstatic.com,代理选择
-  - DOMAIN-SUFFIX,gmail.com,代理选择
-  - DOMAIN-SUFFIX,googlevideo.com,代理选择
-  - DOMAIN-SUFFIX,youtube.com,代理选择
-  - DOMAIN-SUFFIX,ytimg.com,代理选择
-  - DOMAIN-SUFFIX,youtu.be,代理选择
-  
-  # ========================================
-  # AI 服务
-  # ========================================
-  # OpenAI
-  - DOMAIN-SUFFIX,openai.com,AI服务
-  - DOMAIN-SUFFIX,ai.com,AI服务
-  - DOMAIN-SUFFIX,chatgpt.com,AI服务
-  - DOMAIN-SUFFIX,oaistatic.com,AI服务
-  - DOMAIN-SUFFIX,oaiusercontent.com,AI服务
-  
-  # Anthropic (Claude)
-  - DOMAIN-SUFFIX,anthropic.com,AI服务
-  - DOMAIN-SUFFIX,claude.ai,AI服务
-  
-  # Google AI
-  - DOMAIN-SUFFIX,gemini.google.com,AI服务
-  - DOMAIN-SUFFIX,bard.google.com,AI服务
-  - DOMAIN-SUFFIX,makersuite.google.com,AI服务
-  - DOMAIN-SUFFIX,ai.google.dev,AI服务
-  
-  # Microsoft Copilot
-  - DOMAIN-SUFFIX,copilot.microsoft.com,AI服务
-  - DOMAIN-SUFFIX,bing.com,AI服务
-  
-  # 其他 AI
-  - DOMAIN-SUFFIX,perplexity.ai,AI服务
-  - DOMAIN-SUFFIX,midjourney.com,AI服务
-  - DOMAIN-SUFFIX,huggingface.co,AI服务
-  
-  # ========================================
-  # 常用国外网站
-  # ========================================
-  - DOMAIN-SUFFIX,github.com,代理选择
-  - DOMAIN-SUFFIX,githubusercontent.com,代理选择
-  - DOMAIN-SUFFIX,github.io,代理选择
-  - DOMAIN-SUFFIX,twitter.com,代理选择
-  - DOMAIN-SUFFIX,x.com,代理选择
-  - DOMAIN-SUFFIX,facebook.com,代理选择
-  - DOMAIN-SUFFIX,instagram.com,代理选择
-  - DOMAIN-SUFFIX,reddit.com,代理选择
-  - DOMAIN-SUFFIX,wikipedia.org,代理选择
-  - DOMAIN-SUFFIX,stackoverflow.com,代理选择
-  - DOMAIN-SUFFIX,medium.com,代理选择
-  
-  # ========================================
-  # 国内网站直连
-  # ========================================
-  - DOMAIN-SUFFIX,cn,DIRECT
-  - DOMAIN-KEYWORD,baidu,DIRECT
-  - DOMAIN-KEYWORD,aliyun,DIRECT
-  - DOMAIN-KEYWORD,taobao,DIRECT
-  - DOMAIN-KEYWORD,tmall,DIRECT
-  - DOMAIN-KEYWORD,jd,DIRECT
-  - DOMAIN-KEYWORD,qq,DIRECT
-  - DOMAIN-KEYWORD,tencent,DIRECT
-  - DOMAIN-KEYWORD,weixin,DIRECT
-  - DOMAIN-KEYWORD,douyin,DIRECT
-  - DOMAIN-KEYWORD,bilibili,DIRECT
-  
-  # ========================================
-  # 局域网直连
-  # ========================================
-  - IP-CIDR,10.0.0.0/8,DIRECT
-  - IP-CIDR,127.0.0.0/8,DIRECT
-  - IP-CIDR,172.16.0.0/12,DIRECT
-  - IP-CIDR,192.168.0.0/16,DIRECT
-  
-  # ========================================
-  # 中国 IP 直连
-  # ========================================
-  - GEOIP,CN,DIRECT
-  
-  # ========================================
-  # 默认规则（其他走代理）
-  # ========================================
-  - MATCH,代理选择
+  - MATCH,Comcast
