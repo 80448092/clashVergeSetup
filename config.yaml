@@ -38,7 +38,7 @@ dns:
 proxies:
   # Proxy-Cheap Comcast 住宅代理
   - name: "美国住宅IP"
-    type: http  # 或 socks5，看 Dashboard 提供的类型
+    type: socks5  # 或 socks5，看 Dashboard 提供的类型
     server: "46.34.39.123"  # 从 Dashboard 获取
     port: 43321  # 从 Dashboard 获取（可能是 8080）
     username: "WA8eNELH64mNmhp"
